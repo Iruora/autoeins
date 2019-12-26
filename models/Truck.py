@@ -1,10 +1,19 @@
+# Truck:
+#   attributes:
+#       - __registration_number: Truck unique identifier
+#       - __capacity: the maximum number of cars the truck can load
+#       - __loaded_cars: current number of loaded cars
+#       - __driver: the Truck driver
+from models.Driver import Driver
+
+
 class Truck:
 
-    def __init__(self, registration_number, driver, capacity = 8):
+    def __init__(self, registration_number, capacity = 8):
         self.__registration_number = registration_number
         self.__capacity = capacity
         self.__loaded_cars = 0
-        self.__driver = driver
+        self.__driver = None
 
 
 
@@ -23,6 +32,9 @@ class Truck:
     def getDriver(self):
         return self.__driver
 
+    def isAffected(self):
+        return self.getDriver() != None
+
 
     def setRegistrationNumber(self, registration_number):
         self.__registration_number = registration_number
@@ -35,4 +47,6 @@ class Truck:
 
 
     def setDriver(self, driver):
+        if not isinstance(driver, Driver):
+            raise Exception('Argument not of type Driver')
         self.__driver = driver

@@ -16,7 +16,7 @@ def distance(from_branch, destination_branch):
                             destination_branch_position[1])) and (from_branch_position[0])) or not (from_branch_position[1]):
         raise Exception('Missing postion on destination')
 
-    # distance calculated using vincenty see : https://en.wikipedia.org/wiki/Vincenty%27s_formulae
+    # distance calculated using vincenty in Km see : https://en.wikipedia.org/wiki/Vincenty%27s_formulae
     return distance.vincenty(
         from_branch.getPosition(),
         destination_branch.getPosition()

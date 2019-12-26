@@ -1,3 +1,7 @@
+# Driver:
+#   attributes:
+#       - fullname
+#       - registration_number: unique identifier
 class Driver:
 
     def __init__(self, fullname, registration_number):

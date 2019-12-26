@@ -1,6 +1,14 @@
 import geopy.distance as distance
 
-
+# Branch :
+#   attributes :
+#       - __name = branch name
+#       - __cars_number : cars' number contained
+#       - __longitude: branch Geographical longitude
+#       - __latitude: branch Geographical latitude
+#       - __is_logistic_park:
+#           takes True if the branch is the logistic park (starting point) where cars needs to be delivered
+#           takes False if the branch is a point where cars needs to be picked up
 class Branch:
 
 
@@ -37,7 +45,7 @@ class Branch:
         # verify whether we do have not none 2 coordinates for destination branch
         if len(destination_branch_position) != 2 or not (destination_branch_position[0]) or not (destination_branch_position[1]):
             raise Exception('Missing postion on destination')
-        # distance calculated using vincenty see : https://en.wikipedia.org/wiki/Vincenty%27s_formulae
+        # distance calculated using vincenty see in Km : https://en.wikipedia.org/wiki/Vincenty%27s_formulae
         return distance.vincenty(
             self.getPosition(),
             destination_branch_position

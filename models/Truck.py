@@ -10,8 +10,8 @@ from models.Driver import Driver
 class Truck:
 
     def __init__(self, registration_number, capacity = 8):
-        self.__registration_number = registration_number
-        self.__capacity = capacity
+        self.__registration_number = str(registration_number)
+        self.__capacity = int(capacity)
         self.__loaded_cars = 0
         self.__driver = None
 
@@ -37,13 +37,13 @@ class Truck:
 
 
     def setRegistrationNumber(self, registration_number):
-        self.__registration_number = registration_number
+        self.__registration_number = str(registration_number)
 
     def setCapacity(self, capacity):
-        self.__capacity = capacity
+        self.__capacity = int(capacity)
 
     def setLoadedCars(self, loaded_cars):
-        self.__loaded_cars = loaded_cars
+        self.__loaded_cars = int(loaded_cars)
 
 
     def setDriver(self, driver):

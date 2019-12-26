@@ -14,15 +14,24 @@ class Branch:
 
     def __init__(self, name, longitude, latitude):
         self.__name = str(name)
-        self.__cars_number = 1
+        self.__cars_to_pickup_number = 0
+        self.__cars_delivered_number = 0
         self.__longitude = float(longitude)
         self.__latitude = float(latitude)
         self.__is_logistic_park = False
 
-    def setCarsNumber(self, cars_number):
+    def setCarsToPickupNumber(self, cars_number):
+        if self.getIsLogisticPark():
+            raise Exception('This branch only for storage')
         if cars_number < 0 or cars_number > 10:
             raise Exception('cars number in a branch should be in [0,10]')
-        self.__cars_number = cars_number
+        self.__cars_to_pickup_number = cars_number
+
+
+    def setCarsDeliveredNumber(self, delivered_number):
+        if not self.getIsLogisticPark():
+            raise Exception('This branch is not the branch to deliver to')
+        self.__cars_delivered_number = delivered_number
 
 
     def setIsLogisticPark(self, value):
@@ -35,6 +44,22 @@ class Branch:
 
     def getPosition(self):
         return (self.__longitude, self.__latitude)
+
+
+    def getCarsToPickupNumber(self):
+        if self.getIsLogisticPark():
+            self.__cars_to_pickup_number = 0
+        return self.__cars_to_pickup_number
+
+
+    def getCarsDeliveredNumber(self):
+        if not self.getIsLogisticPark():
+            self.__cars_delivered_number = 0
+        return self.__cars_delivered_number
+
+
+    def getIsLogisticPark(self):
+        return self.__is_logistic_park
 
 
     def getDistanceTo(self, destination_branch):

@@ -100,5 +100,34 @@ def final_objectif_matrix(first_objectif, second_objectif, first_objectif_weight
         second_objectif
     )
 
-# def final_problem_objectif_matrix(branchs_array):
-#
+def final_problem_objectif_matrix(branchs_array):
+    # second objecif : maximize vehicles' number
+    first_objectif_matrix = vehicle_number_matrix(branchs_array=branchs_array)
+    # first objecif : minimize paths time
+    second_objectif_matrix = distance_matrix(branchs_array=branchs_array)
+
+    return final_objectif_matrix(
+        first_objectif = first_objectif_matrix,
+        second_objectif = second_objectif_matrix
+    )
+
+
+def select_max_profit(objectif_matrix, current_branch, selected_branchs, branchs, time):
+    print(f"current inside function is : {current_branch}")
+    t = objectif_matrix[current_branch][:]
+    print(t)
+    not_selected = [x for x in range(len(t)) if x not in selected_branchs]
+    print(f"not_selected : {not_selected}")
+    if not len(not_selected):
+        return
+    maximum =  not_selected[0]
+    print(f"maximum before for loop : {t[maximum]} of index {maximum}")
+    if (t[maximum] in [inf, np.nan] and len(not_selected) == 1):
+        return 0
+    for j in range(len(t)):
+        is_greater = t[j] > t[maximum]
+        is_not_selected = j not in selected_branchs
+        if is_greater and is_not_selected:
+            maximum = j
+            # print(f"nearest : {branchs[maximum]}")
+    return maximum

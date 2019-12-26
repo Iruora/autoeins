@@ -1,8 +1,8 @@
 from models.Branch import Branch
-from models.Driver import Driver
-from models.Truck import Truck
-from math import inf
-from utils.utils import distance_matrix, vehicle_number_matrix, final_objectif_matrix
+# from models.Driver import Driver
+# from models.Truck import Truck
+# from math import inf
+from utils.utils import final_problem_objectif_matrix
 
 o = Branch(name="1er arr", longitude=48.864031, latitude=2.330943)
 o.setAsLogisticPark()
@@ -20,15 +20,12 @@ e.setCarsToPickupNumber(1)
 branchs = [o, a, b, c, d, e]
 # print(distance_matrix(branchs_array= branchs))
 import numpy as np
-vehicle_number_matrix_np = np.array(vehicle_number_matrix(branchs_array= branchs))
-distance_matrix_np = np.array(distance_matrix(branchs_array= branchs))
+# vehicle_number_matrix_np = np.array(vehicle_number_matrix(branchs_array= branchs))
+# distance_matrix_np = np.array(distance_matrix(branchs_array= branchs))
 
-print(len(vehicle_number_matrix_np))
-print(len(distance_matrix_np))
+# print(len(vehicle_number_matrix_np))
+# print(len(distance_matrix_np))
 
-fobj = final_objectif_matrix(
-    first_objectif= vehicle_number_matrix_np,
-    second_objectif= distance_matrix_np
-)
+fobj = final_problem_objectif_matrix(branchs_array=branchs)
 
 print(fobj)

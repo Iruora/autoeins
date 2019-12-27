@@ -13,12 +13,13 @@ class Branch:
 
 
     def __init__(self, name, longitude, latitude):
-        self.__name = str(name)
+        self.name = str(name)
         self.__cars_to_pickup_number = 0
         self.__cars_delivered_number = 0
         self.__longitude = float(longitude)
         self.__latitude = float(latitude)
         self.__is_logistic_park = False
+        self.__is_selected = False
 
     def setCarsToPickupNumber(self, cars_number):
         if self.getIsLogisticPark():
@@ -35,11 +36,18 @@ class Branch:
 
 
     def setIsLogisticPark(self, value):
+        if value:
+            self.__is_selected = True
         self.__is_logistic_park = bool(value)
 
 
     def setAsLogisticPark(self):
+        self.__is_selected = True
         self.setIsLogisticPark(True)
+
+
+    def setIsSelected(self, value):
+        self.__is_selected = value
 
 
     def getPosition(self):
@@ -61,6 +69,8 @@ class Branch:
     def getIsLogisticPark(self):
         return self.__is_logistic_park
 
+    def getIsSelected(self):
+        return self.__is_selected
 
     def getDistanceTo(self, destination_branch):
         # verify whether we have got a Branch instance

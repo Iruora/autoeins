@@ -106,28 +106,92 @@ def final_problem_objectif_matrix(branchs_array):
     # first objecif : minimize paths time
     second_objectif_matrix = distance_matrix(branchs_array=branchs_array)
 
-    return final_objectif_matrix(
+    matrix = final_objectif_matrix(
         first_objectif = first_objectif_matrix,
         second_objectif = second_objectif_matrix
     )
+    matrix[np.isnan(matrix)] = -1 * np.inf
+    return matrix
 
 
-def select_max_profit(objectif_matrix, current_branch, selected_branchs, branchs, time):
+def select_max_profit(final_objectif_matrix_res, current_branch, selected_branchs, branchs, time):
     print(f"current inside function is : {current_branch}")
-    t = objectif_matrix[current_branch][:]
-    print(t)
-    not_selected = [x for x in range(len(t)) if x not in selected_branchs]
+    current_branch_neighbors_profit = final_objectif_matrix_res[current_branch][:]
+    print(current_branch_neighbors_profit)
+    not_selected = [x for x in range(len(current_branch_neighbors_profit)) if x not in selected_branchs]
     print(f"not_selected : {not_selected}")
     if not len(not_selected):
         return
     maximum =  not_selected[0]
-    print(f"maximum before for loop : {t[maximum]} of index {maximum}")
-    if (t[maximum] in [inf, np.nan] and len(not_selected) == 1):
+    print(f"maximum before for loop : {current_branch_neighbors_profit[maximum]} of index {maximum}")
+    if (current_branch_neighbors_profit[maximum] in [np.nan, inf, -1 * inf] and len(not_selected) == 1):
         return 0
-    for j in range(len(t)):
-        is_greater = t[j] > t[maximum]
+    for j in not_selected:
+        is_greater = current_branch_neighbors_profit[j] > current_branch_neighbors_profit[maximum]
         is_not_selected = j not in selected_branchs
-        if is_greater and is_not_selected:
+        value_is_not_inf_or_nan = current_branch_neighbors_profit[j] not in [np.nan, inf, -1 * inf]
+        print(f"{j} is greater : {is_greater} /  is_not_selected : {is_not_selected} /   value_is_not_inf_or_nan : {value_is_not_inf_or_nan}")
+        if is_greater and is_not_selected and value_is_not_inf_or_nan:
             maximum = j
             # print(f"nearest : {branchs[maximum]}")
     return maximum
+
+
+def find_optimized_path(branchs, truck):
+    time = 7
+    selected_branchs = []
+    not_selected = range(5)
+
+    distance_matrix_res = distance_matrix(branchs)
+    final_problem_objectif_matrix_res = final_problem_objectif_matrix(branchs)
+
+    debugger_ = 0
+    while len(not_selected) > 0 and time < 17:
+        current_branch = 0
+        selected_branchs.append(current_branch);
+        if (len(selected_branchs) > 1):
+            time += distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
+        deep = 0
+        cars_number = 0
+
+        debugger_ += 1
+
+        while deep < 3:
+            current_branch = select_max_profit(final_problem_objectif_matrix_res, current_branch, selected_branchs, branchs, time)
+
+            if not current_branch:
+                break
+            # if distance_matrix_res[selected_branchs[-1]][current_branch] + time + distance_matrix_res[0][current_branch] < 17:
+            selected_branchs.append(current_branch)
+            cars_number += branchs[current_branch].getCarsToPickupNumber()
+            branchs[0].setCarsDeliveredNumber(cars_number)
+
+            if cars_number > 8:
+                print(f"delete : {selected_branchs.pop()}")
+            else:
+                time += distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
+            if time > 17:
+                time -= distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
+                branchs[selected_branchs[-1]].setIsSelected(False)
+                selected_branchs.pop()
+                # break
+                # not_today.append(selected_branchs[-1])
+
+            not_selected = [x for x in range(len(branchs)) if x not in selected_branchs]
+            # print(f"cars_number : {cars_number}")
+            deep += 1
+            # print(f"selected_branchs : {selected_branchs}")
+            # print("-----------------------------------------")
+    # selected_branchs.append(current_branch)
+    print(f"time just before returning to center : {time}")
+    if selected_branchs[-1] != 0:
+        selected_branchs.append(0)
+        print(f"len(not_selected) = {len(not_selected)}")
+        time += distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
+    print(f"time just after returning to center : {time}")
+    # selected_branchs = [x for x in selected_branchs if x not in not_today]
+    print(f"selected_branchs {selected_branchs}")
+    # for index in selected_branchs:
+    #     print(f"{branchs[index].name} --- status : {branchs[index].getIsSelected()}")
+    print(f"time {time}")
+    # print(f"not_selected ! {not_selected}")

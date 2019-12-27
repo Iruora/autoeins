@@ -2,7 +2,10 @@ from models.Branch import Branch
 # from models.Driver import Driver
 # from models.Truck import Truck
 # from math import inf
-from utils.utils import final_problem_objectif_matrix
+from models.Truck import Truck
+from utils.utils import final_problem_objectif_matrix, distance_matrix, find_optimized_path, select_max_profit
+
+truck = Truck("NYC10D9")
 
 o = Branch(name="1er arr", longitude=48.864031, latitude=2.330943)
 o.setAsLogisticPark()
@@ -21,11 +24,16 @@ branchs = [o, a, b, c, d, e]
 # print(distance_matrix(branchs_array= branchs))
 import numpy as np
 # vehicle_number_matrix_np = np.array(vehicle_number_matrix(branchs_array= branchs))
-# distance_matrix_np = np.array(distance_matrix(branchs_array= branchs))
+distance_matrix_np = np.array(distance_matrix(branchs_array= branchs))
 
 # print(len(vehicle_number_matrix_np))
-# print(len(distance_matrix_np))
+# print(np.array(distance_matrix(branchs_array= branchs)))
 
 fobj = final_problem_objectif_matrix(branchs_array=branchs)
-
-print(fobj)
+fobj[np.isnan(fobj)] = -1 * np.inf
+# print(fobj)
+find_optimized_path(branchs, truck)
+# current_branch = 2
+# selected_branchs = [0, 4, 3, 0, 1, 2]
+# time = 7
+# max = select_max_profit(fobj, current_branch, selected_branchs, branchs, time)

@@ -36,6 +36,12 @@ class Truck:
         return self.getDriver() != None
 
 
+    def getFreeSpace(self):
+        return self.__capacity - self.__loaded_cars
+
+    def freeLoad(self):
+        self.setLoadedCars(0)
+
     def setRegistrationNumber(self, registration_number):
         self.__registration_number = str(registration_number)
 
@@ -43,6 +49,8 @@ class Truck:
         self.__capacity = int(capacity)
 
     def setLoadedCars(self, loaded_cars):
+        if loaded_cars > self.__capacity:
+            raise ValueError('Cannot load more than the capacit, capacit = {}', self.__capacity)
         self.__loaded_cars = int(loaded_cars)
 
 
@@ -50,3 +58,7 @@ class Truck:
         if not isinstance(driver, Driver):
             raise Exception('Argument not of type Driver')
         self.__driver = driver
+
+
+    def is_full(self):
+        return self.__capacity == self.__loaded_cars

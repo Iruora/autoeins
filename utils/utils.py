@@ -14,6 +14,16 @@ adjacency_matrix = [
     [1, -1, -1, 1, -1, 1],
     [1, -1, -1, 1, 1, -1]
 ]
+# takes float number to convert it into human readable time
+def from_float_to_time(float_time):
+    time = float(float_time)
+    hour = np.floor(time)
+    minutes = np.floor((time - hour) * 60)
+    if minutes < 10:
+        return f"{int(hour)}h0{int(minutes)}"
+
+    return f"{int(hour)}h{int(minutes)}"
+
 # takes two branchs to calculate the distance between them using vincenty formula
 def distance_between_branchs(from_branch, destination_branch):
     # verify whether we have got Branch instances as args
@@ -34,15 +44,17 @@ def distance_between_branchs(from_branch, destination_branch):
         destination_branch.getPosition()
     ).km
 
-
+# Takes branchs array to calculate distance matrix
 def distance_matrix(branchs_array):
     if not branchs_array:
         raise Exception('Missing 1 argument : branchs array')
     N = len(branchs_array)
     if not len(branchs_array):
         raise Exception('Empty array')
-    matrix = [[0 for i in range(N)] for j in range(N)]
-
+    # initialize matrix with zero
+    matrix = np.zeros((N, N))
+    # if branch i and branch j are adjacent matrix takes the distance between them
+    # otherwise it takes infinity
     for i in range(N - 1):
         for j in range(i + 1, N):
             if adjacency_matrix[i][j] == 1:
@@ -63,8 +75,9 @@ def vehicle_number_matrix(branchs_array):
     N = len(branchs_array)
     if not len(branchs_array):
         raise Exception('Empty array')
-    matrix = [[0 for i in range(N)] for j in range(N)]
-
+    matrix = np.zeros((N, N))
+    # if branch i and branch j are adjacent matrix takes the sum of vehicles to pick up between them
+    # otherwise it takes infinity
     for i in range(N - 1):
         for j in range(i + 1, N):
             if adjacency_matrix[i][j] == 1:
@@ -113,85 +126,108 @@ def final_problem_objectif_matrix(branchs_array):
     matrix[np.isnan(matrix)] = -1 * np.inf
     return matrix
 
-
-def select_max_profit(final_objectif_matrix_res, current_branch, selected_branchs, branchs, time):
-    print(f"current inside function is : {current_branch}")
+# select the branch with maximum gain
+def select_max_profit(final_objectif_matrix_res, current_branch, selected_branchs, not_today):
+    # current branch row in objective matrix
     current_branch_neighbors_profit = final_objectif_matrix_res[current_branch][:]
-    print(current_branch_neighbors_profit)
-    not_selected = [x for x in range(len(current_branch_neighbors_profit)) if x not in selected_branchs]
-    print(f"not_selected : {not_selected}")
+    # not selected takes elements not in selected list
+    not_selected = [x for x in range(len(current_branch_neighbors_profit)) if x not in selected_branchs and x not in not_today]
+
+    # if all branchs are selected return none
     if not len(not_selected):
         return
+    # initialize maximum to the first branch index not selected
     maximum =  not_selected[0]
-    print(f"maximum before for loop : {current_branch_neighbors_profit[maximum]} of index {maximum}")
+    # if we end up with a single element not selected and we can't reach from the current branch
+    # return to the logistic park
     if (current_branch_neighbors_profit[maximum] in [np.nan, inf, -1 * inf] and len(not_selected) == 1):
         return 0
+    # select the maximum gain from the not selected reachable neighbors
     for j in not_selected:
         is_greater = current_branch_neighbors_profit[j] > current_branch_neighbors_profit[maximum]
         is_not_selected = j not in selected_branchs
         value_is_not_inf_or_nan = current_branch_neighbors_profit[j] not in [np.nan, inf, -1 * inf]
-        print(f"{j} is greater : {is_greater} /  is_not_selected : {is_not_selected} /   value_is_not_inf_or_nan : {value_is_not_inf_or_nan}")
+
         if is_greater and is_not_selected and value_is_not_inf_or_nan:
             maximum = j
-            # print(f"nearest : {branchs[maximum]}")
     return maximum
 
 
-def find_optimized_path(branchs, truck):
-    time = 7
+def find_optimized_path(branchs, truck, starting_time = 7, closing_time = 17):
+    origin = branchs[0]
+
+    time = starting_time
     selected_branchs = []
-    not_selected = range(5)
+    not_selected = list(range(len(branchs)))
+    not_today = []
+    time_table = [starting_time]
 
     distance_matrix_res = distance_matrix(branchs)
     final_problem_objectif_matrix_res = final_problem_objectif_matrix(branchs)
 
     debugger_ = 0
-    while len(not_selected) > 0 and time < 17:
-        current_branch = 0
-        selected_branchs.append(current_branch);
+    while len(not_selected) > 0 and time < closing_time:
+        current_branch_index = 0
+        selected_branchs.append(current_branch_index)
+
         if (len(selected_branchs) > 1):
             time += distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
+            time_table.append(time)
         deep = 0
         cars_number = 0
 
         debugger_ += 1
 
-        while deep < 3:
-            current_branch = select_max_profit(final_problem_objectif_matrix_res, current_branch, selected_branchs, branchs, time)
-
-            if not current_branch:
+        truck.freeLoad()
+        while deep < 3 and not truck.is_full():
+            current_branch_index = select_max_profit(final_problem_objectif_matrix_res, current_branch_index, selected_branchs, not_today)
+            if not current_branch_index:
                 break
-            # if distance_matrix_res[selected_branchs[-1]][current_branch] + time + distance_matrix_res[0][current_branch] < 17:
-            selected_branchs.append(current_branch)
-            cars_number += branchs[current_branch].getCarsToPickupNumber()
-            branchs[0].setCarsDeliveredNumber(cars_number)
+            current_branch = branchs[current_branch_index]
 
-            if cars_number > 8:
-                print(f"delete : {selected_branchs.pop()}")
-            else:
+            is_full = truck.is_full()
+            can_i_reach_and_back_before_closing_time = distance_matrix_res[selected_branchs[-1]][current_branch_index] + time + distance_matrix_res[0][current_branch_index] < 17
+
+            if not is_full and can_i_reach_and_back_before_closing_time:
+                selected_branchs.append(current_branch_index)
+                if current_branch.getCarsToPickupNumber() > truck.getFreeSpace():
+                    cars_number += truck.getFreeSpace()
+                    current_branch.setCarsToPickupNumber(current_branch.getCarsToPickupNumber() - truck.getFreeSpace())
+                    final_problem_objectif_matrix_res = final_problem_objectif_matrix(branchs)
+                    not_selected.append(current_branch_index)
+                else:
+                    cars_number += current_branch.getCarsToPickupNumber()
+                truck.setLoadedCars(cars_number)
+                origin.setCarsDeliveredNumber(cars_number + origin.getCarsDeliveredNumber())
                 time += distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
-            if time > 17:
-                time -= distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
-                branchs[selected_branchs[-1]].setIsSelected(False)
-                selected_branchs.pop()
-                # break
-                # not_today.append(selected_branchs[-1])
+                time_table.append(time)
+            elif not can_i_reach_and_back_before_closing_time:
+                not_today.append(current_branch_index)
+            else:
+                not_today.append(current_branch_index)
 
-            not_selected = [x for x in range(len(branchs)) if x not in selected_branchs]
-            # print(f"cars_number : {cars_number}")
+            not_selected = [x for x in range(len(branchs)) if x not in selected_branchs and x not in not_today]
+
+
             deep += 1
-            # print(f"selected_branchs : {selected_branchs}")
-            # print("-----------------------------------------")
-    # selected_branchs.append(current_branch)
-    print(f"time just before returning to center : {time}")
+
+
     if selected_branchs[-1] != 0:
         selected_branchs.append(0)
-        print(f"len(not_selected) = {len(not_selected)}")
         time += distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
-    print(f"time just after returning to center : {time}")
-    # selected_branchs = [x for x in selected_branchs if x not in not_today]
-    print(f"selected_branchs {selected_branchs}")
-    # for index in selected_branchs:
-    #     print(f"{branchs[index].name} --- status : {branchs[index].getIsSelected()}")
-    print(f"time {time}")
-    # print(f"not_selected ! {not_selected}")
+
+    print("==============================")
+    print(f"we started from logistic park in : {branchs[0].name} at {from_float_to_time(time_table[0])}")
+    print("==============================")
+    print(f"{branchs[0].name} --- delivered cars : 0 -- time {from_float_to_time(time_table[0])}")
+
+    for index in range(1, len(selected_branchs)):
+        if selected_branchs[index] == 0:
+            print(f"{branchs[selected_branchs[index]].name} --- delivered cars : {branchs[selected_branchs[index]].getCarsDeliveredNumber()} -- time {from_float_to_time(time_table[index])}")
+        else:
+            print(f"{branchs[selected_branchs[index]].name} --- taken cars : {branchs[selected_branchs[index]].getCarsToPickupNumber()} -- time {from_float_to_time(time_table[index])}")
+
+
+    print("==============================")
+    print(f"{branchs[selected_branchs[0]].getCarsDeliveredNumber()} delivered cars")
+

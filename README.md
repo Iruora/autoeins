@@ -10,11 +10,16 @@ We consider here the first 6 "arrondissements" of Paris.
 </br>
 </br>
 <a href="https://www.codecogs.com/eqnedit.php?latex=\forall&space;i,j&space;\epsilon&space;\left&space;\{&space;1&space;\right&space;,...,n\}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\forall&space;i,j&space;\epsilon&space;\left&space;\{&space;1&space;\right&space;,...,n\}" title="\forall i,j \epsilon \left \{ 1 \right ,...,n\}" /></a></br></br>
-<a href="https://www.codecogs.com/eqnedit.php?latex=objectif1&space;=max\sum_{i&space;=1}^{n}\sum_{j&space;=1}^{n}v_{ij}x_{ij}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?objectif1&space;=max\sum_{i&space;=1}^{n}\sum_{j&space;=1}^{n}v_{ij}x_{ij}" title="objectif1 =max\sum_{i =1}^{n}\sum_{j =1}^{n}v_{ij}x_{ij}" /></a></br></br>
+<a href="https://www.codecogs.com/eqnedit.php?latex=objectif1&space;=max\sum_{i&space;=1}^{n}\sum_{j&space;=1}^{n}v_{ij}x_{ij}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?objectif1&space;=max\sum_{i&space;=1}^{n}\sum_{j&space;=1}^{n}v_{ij}x_{ij}" title="objectif1 =max\sum_{i =1}^{n}\sum_{j =1}^{n}v_{ij}x_{ij}" /></a>
+</br></br>
+**Scalarization :** 
+</br></br>
 <a href="https://www.codecogs.com/eqnedit.php?latex=objectif2&space;=min\sum_{i&space;=1}^{n}\sum_{j&space;=1}^{n}c_{ij}x_{ij}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?objectif2&space;=min\sum_{i&space;=1}^{n}\sum_{j&space;=1}^{n}c_{ij}x_{ij}" title="objectif2 =min\sum_{i =1}^{n}\sum_{j =1}^{n}c_{ij}x_{ij}" /></a></br></br>
 <a href="https://www.codecogs.com/eqnedit.php?latex=finalObjective&space;=\omega_{0}objectif1&plus;\omega_{1}objectif2" target="_blank"><img src="https://latex.codecogs.com/gif.latex?finalObjective&space;=\omega_{0}objectif1&plus;\omega_{1}objectif2" title="finalObjective =\omega_{0}objectif1+\omega_{1}objectif2" /></a></br></br>
-<a href="https://www.codecogs.com/eqnedit.php?latex=finalObjectif&space;=max\sum_{i&space;=1}^{n}\sum_{j&space;=1}^{n}a_{ij}x_{ij};&space;\:&space;\:&space;a_{ij}&space;=&space;\omega_{0}v_{ij}&space;-&space;\omega_{1}c_{ij}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?finalObjectif&space;=max\sum_{i&space;=1}^{n}\sum_{j&space;=1}^{n}a_{ij}x_{ij};&space;\:&space;\:&space;a_{ij}&space;=&space;\omega_{0}v_{ij}&space;-&space;\omega_{1}c_{ij}" title="finalObjectif =max\sum_{i =1}^{n}\sum_{j =1}^{n}a_{ij}x_{ij}; \: \: a_{ij} = \omega_{0}v_{ij} - \omega_{1}c_{ij}" /></a></br></br>
-
+<a href="https://www.codecogs.com/eqnedit.php?latex=finalObjectif&space;=max\sum_{i&space;=1}^{n}\sum_{j&space;=1}^{n}a_{ij}x_{ij};&space;\:&space;\:&space;a_{ij}&space;=&space;\omega_{0}v_{ij}&space;-&space;\omega_{1}c_{ij}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?finalObjectif&space;=max\sum_{i&space;=1}^{n}\sum_{j&space;=1}^{n}a_{ij}x_{ij};&space;\:&space;\:&space;a_{ij}&space;=&space;\omega_{0}v_{ij}&space;-&space;\omega_{1}c_{ij}" title="finalObjectif =max\sum_{i =1}^{n}\sum_{j =1}^{n}a_{ij}x_{ij}; \: \: a_{ij} = \omega_{0}v_{ij} - \omega_{1}c_{ij}" /></a>
+</br></br>
+**Constraints :** 
+</br></br>
 <a href="https://www.codecogs.com/eqnedit.php?latex=v_{ij}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?v_{ij}" title="v_{ij}" /></a>
 : Sum of vehicles between branch i and j
 

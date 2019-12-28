@@ -152,70 +152,88 @@ def select_max_profit(final_objectif_matrix_res, current_branch, selected_branch
             maximum = j
     return maximum
 
-
+# this method handel the best baths selection
 def find_optimized_path(branchs, truck, starting_time = 7, closing_time = 17):
+    # the origin is passed as the first element in branchs list
     origin = branchs[0]
-
+    if not origin.getIsLogisticPark():
+        raise Exception("First element in the branchs list should be the logistic park")
+    # clock
     time = starting_time
-    selected_branchs = []
+    selected_branchs = [] # Selected branchs as parts of the path
     not_selected = list(range(len(branchs)))
+    # vehicles impossible to deliver today
     not_today = []
+    # path time table
     time_table = [starting_time]
-
+    # We suppose here that distance is equivalent to the path time between branchs
     distance_matrix_res = distance_matrix(branchs)
-    final_problem_objectif_matrix_res = final_problem_objectif_matrix(branchs)
+    final_problem_objective_matrix_res = final_problem_objectif_matrix(branchs)
 
-    debugger_ = 0
+    # while we still have elements ot selected and closing time not reached yet
     while len(not_selected) > 0 and time < closing_time:
+        #  start from the origin of index 0
         current_branch_index = 0
+        # add the origin as selected
         selected_branchs.append(current_branch_index)
-
+        # if we have at least two selected branchs increment time and add to the time table
         if (len(selected_branchs) > 1):
             time += distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
             time_table.append(time)
+        # exploration depth
         deep = 0
-        cars_number = 0
-
-        debugger_ += 1
-
+        # if we are in the logistic parc we free the truck's load
         truck.freeLoad()
+        cars_number = 0
+        # exploration depth mustn't exceed 3 branchs
         while deep < 3 and not truck.is_full():
-            current_branch_index = select_max_profit(final_problem_objectif_matrix_res, current_branch_index, selected_branchs, not_today)
+            # select the most profitable branch index
+            current_branch_index = select_max_profit(final_problem_objective_matrix_res, current_branch_index, selected_branchs, not_today)
+            # if none we break
             if not current_branch_index:
                 break
             current_branch = branchs[current_branch_index]
-
+            # whether the truck is full
             is_full = truck.is_full()
+            # Reachable if we can reach and back to the logistic park before 17 o'clock
             can_i_reach_and_back_before_closing_time = distance_matrix_res[selected_branchs[-1]][current_branch_index] + time + distance_matrix_res[0][current_branch_index] < 17
 
             if not is_full and can_i_reach_and_back_before_closing_time:
+                # as the truck can load and the branch is reachabke we select it
                 selected_branchs.append(current_branch_index)
                 if current_branch.getCarsToPickupNumber() > truck.getFreeSpace():
+                    # As the branch dispose more than the truck capacity
+                    # fill the free space in the truck
                     cars_number += truck.getFreeSpace()
+                    # decrement the branch's cars number
                     current_branch.setCarsToPickupNumber(current_branch.getCarsToPickupNumber() - truck.getFreeSpace())
-                    final_problem_objectif_matrix_res = final_problem_objectif_matrix(branchs)
+                    # update objective matrix to update the second objective matrix
+                    final_problem_objective_matrix_res = final_problem_objectif_matrix(branchs)
+                    # keep the branch available to selection
                     not_selected.append(current_branch_index)
                 else:
+                    # else get all branch's cars
                     cars_number += current_branch.getCarsToPickupNumber()
+                # load the truck
                 truck.setLoadedCars(cars_number)
-                origin.setCarsDeliveredNumber(cars_number + origin.getCarsDeliveredNumber())
+                # increment time by adding the path cost
                 time += distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
                 time_table.append(time)
             elif not can_i_reach_and_back_before_closing_time:
+                # unreachable append to not today
                 not_today.append(current_branch_index)
-            else:
-                not_today.append(current_branch_index)
-
+            # update not selected branchs list
             not_selected = [x for x in range(len(branchs)) if x not in selected_branchs and x not in not_today]
-
-
+            # increment depth
             deep += 1
+        # incrment the delivered cars number to the origin
+        origin.setCarsDeliveredNumber(cars_number + origin.getCarsDeliveredNumber())
 
-
+    #  if we ends with some thing other then the origin in the selection we add it and we calculate the path cost
     if selected_branchs[-1] != 0:
         selected_branchs.append(0)
         time += distance_matrix_res[selected_branchs[-2]][selected_branchs[-1]]
-
+    # Showing results
     print("==============================")
     print(f"we started from logistic park in : {branchs[0].name} at {from_float_to_time(time_table[0])}")
     print("==============================")

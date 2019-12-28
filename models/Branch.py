@@ -22,6 +22,8 @@ class Branch:
         self.__is_selected = False
 
     def setCarsToPickupNumber(self, cars_number):
+        if cars_number < 1 or cars_number > 10:
+            raise ValueError("cars_number should be between : 1 and 10")
         if self.getIsLogisticPark():
             raise Exception('This branch only for storage')
         if cars_number < 0 or cars_number > 10:
@@ -30,6 +32,8 @@ class Branch:
 
 
     def setCarsDeliveredNumber(self, delivered_number):
+        if delivered_number < 0:
+            raise ValueError("cars_number should be between : 1 and 10")
         if not self.getIsLogisticPark():
             raise Exception('This branch is not the branch to deliver to')
         self.__cars_delivered_number = delivered_number

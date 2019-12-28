@@ -43,12 +43,18 @@ class Truck:
         self.setLoadedCars(0)
 
     def setRegistrationNumber(self, registration_number):
+        if not len(registration_number):
+            raise ValueError("registration number not empty string")
         self.__registration_number = str(registration_number)
 
     def setCapacity(self, capacity):
+        if int(capacity) < 0:
+            raise ValueError("capacity is a positive integer")
         self.__capacity = int(capacity)
 
     def setLoadedCars(self, loaded_cars):
+        if int(loaded_cars) < 0:
+            raise ValueError("capacity is a positive integer")
         if loaded_cars > self.__capacity:
             raise ValueError('Cannot load more than the capacit, capacit = {}', self.__capacity)
         self.__loaded_cars = int(loaded_cars)

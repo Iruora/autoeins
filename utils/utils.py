@@ -152,7 +152,7 @@ def select_max_profit(final_objectif_matrix_res, current_branch, selected_branch
             maximum = j
     return maximum
 
-# this method handel the best baths selection
+# this method handel the best paths selection
 def find_optimized_path(branchs, truck, starting_time = 7, closing_time = 17):
     # the origin is passed as the first element in branchs list
     origin = branchs[0]

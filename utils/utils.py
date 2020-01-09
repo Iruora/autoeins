@@ -170,7 +170,7 @@ def find_optimized_path(branchs, truck, starting_time = 7, closing_time = 17):
     distance_matrix_res = distance_matrix(branchs)
     final_problem_objective_matrix_res = final_problem_objectif_matrix(branchs)
 
-    # while we still have elements ot selected and closing time not reached yet
+    # while we still have elements not selected and closing time not reached yet
     while len(not_selected) > 0 and time < closing_time:
         #  start from the origin of index 0
         current_branch_index = 0
@@ -195,8 +195,8 @@ def find_optimized_path(branchs, truck, starting_time = 7, closing_time = 17):
             current_branch = branchs[current_branch_index]
             # whether the truck is full
             is_full = truck.is_full()
-            # Reachable if we can reach and back to the logistic park before 17 o'clock
-            can_i_reach_and_back_before_closing_time = distance_matrix_res[selected_branchs[-1]][current_branch_index] + time + distance_matrix_res[0][current_branch_index] < 17
+            # Reachable if we can reach and back to the logistic park before closing time
+            can_i_reach_and_back_before_closing_time = distance_matrix_res[selected_branchs[-1]][current_branch_index] + time + distance_matrix_res[0][current_branch_index] < closing_time
 
             if not is_full and can_i_reach_and_back_before_closing_time:
                 # as the truck can load and the branch is reachabke we select it
